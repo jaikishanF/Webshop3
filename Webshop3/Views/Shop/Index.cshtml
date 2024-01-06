@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+
+<h2>Products</h2>
+
+<div class="container">
+    @{
+        int counter = 0;
+    }
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3">
+                <div class="card">
+                    <img class="card-img-top" src="@product.ImageUrl" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@product.Price</p>
+                        <!-- Add more product details here -->
+                    </div>
+                    <a asp-action="ViewProduct" asp-route-id="@product.Id">View</a>
+                </div>
+            </div>
+
+            counter++;
+            if (counter % 4 == 0 && counter != Model.Count())
+            {
+                @:</div><div class="row">
+            }
+        }
+    </div>
+</div>

@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Shopping Cart";
+    var shoppingCartItems = ViewData["ShoppingCartItems"] as List<Product>;
+    decimal TotalPrice = 0.00m;
+}
+
+<div class="container mt-4">
+    <h2>Shopping Cart for Customer</h2>
+
+    @if (shoppingCartItems != null && shoppingCartItems.Any())
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in shoppingCartItems)
+                {
+                    TotalPrice += item.Price;
+                    <tr>
+                        <td>
+                            <img src="@Url.Content(item.ImageUrl)" alt="Product Image" style="height: 50px; width: auto;">
+                        </td>
+                        <td>@item.Name</td>
+                        <td class="individual-price">$@item.Price.ToString("0.00")</td>
+                        <td>
+                            <button class="btn btn-danger delete-item-btn" data-product-id="@item.Id">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;">Total Price:</td>
+                    <td id="total-price">$@TotalPrice.ToString("0.00")</td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p class="text-center">The shopping cart is empty.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function updateTotalPrice() {
+            var totalPrice = 0.00;
+            $('.individual-price').each(function () {
+                var price = parseFloat($(this).text().substring(1)); // Assuming the format is "$xx.xx"
+                totalPrice += price;
+            });
+            $('#total-price').text('$' + totalPrice.toFixed(2));
+        }
+
+        $(document).ready(function () {
+            $('.delete-item-btn').click(function () {
+                var productId = $(this).data('product-id');
+                var button = $(this); // Reference to the clicked button
+
+                $.ajax({
+                    url: '/Shoppingcart/Delete',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        button.closest('tr').remove(); // Remove the closest <tr> element
+                        updateTotalPrice(); // Update total price after deletion
+
+                        // Check if the cart is now empty and update UI accordingly
+                        if ($('.delete-item-btn').length === 0) {
+                            $('.table').replaceWith('<p class="text-center">The shopping cart is empty.</p>');
+                        }
+                    },
+                    error: function (error) {
+                        alert('Error removing product from cart');
+                    }
+                });
+            });
+        });
+    </script>
+}
