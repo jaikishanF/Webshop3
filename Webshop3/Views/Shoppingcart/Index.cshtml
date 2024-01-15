@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Shopping Cart";
-    var shoppingCartItems = ViewData["ShoppingCartItems"] as List<Product>;
+    var shoppingCartItems = ViewData["ShoppingCartItems"] as List<ShoppingCartItem>;
     decimal TotalPrice = 0.00m;
 }
 
@@ -12,6 +12,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>Quantity</th>
                     <th>Product Image</th>
                     <th>Product Name</th>
                     <th>Price</th>
@@ -21,15 +22,16 @@
             <tbody>
                 @foreach (var item in shoppingCartItems)
                 {
-                    TotalPrice += item.Price;
+                    TotalPrice += item.Product.Price * item.Quantity; // calculate total price based on quantity
                     <tr>
+                        <td>@item.Quantity</td>
                         <td>
-                            <img src="@Url.Content(item.ImageUrl)" alt="Product Image" style="height: 50px; width: auto;">
+                            <img src="@Url.Content(item.Product.ImageUrl)" alt="Product Image" style="height: 50px; width: auto;">
                         </td>
-                        <td>@item.Name</td>
-                        <td class="individual-price">$@item.Price.ToString("0.00")</td>
+                        <td>@item.Product.Name</td>
+                        <td class="individual-price">$@(item.Product.Price*@item.Quantity)</td>
                         <td>
-                            <button class="btn btn-danger delete-item-btn" data-product-id="@item.Id">Delete</button>
+                            <button class="btn btn-danger delete-item-btn" data-product-id="@item.Product.Id">Delete</button>
                         </td>
                     </tr>
                 }

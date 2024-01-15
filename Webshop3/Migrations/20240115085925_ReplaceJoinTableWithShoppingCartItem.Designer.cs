@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop3.Data;
 
@@ -11,9 +12,11 @@ using Webshop3.Data;
 namespace Webshop3.Migrations
 {
     [DbContext(typeof(Webshop3Context))]
-    partial class Webshop3ContextModelSnapshot : ModelSnapshot
+    [Migration("20240115085925_ReplaceJoinTableWithShoppingCartItem")]
+    partial class ReplaceJoinTableWithShoppingCartItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
