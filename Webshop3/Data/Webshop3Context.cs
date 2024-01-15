@@ -31,10 +31,10 @@ namespace Webshop3.Data
                 .HasDefaultValue("Default address");
 
             // join table customer and product for shoppingcart
-            builder.Entity<Customer>()
-                .HasMany(c => c.ShoppingCart)
-                .WithMany(p => p.Customers)
-                .UsingEntity(j => j.ToTable("CustomerProducts"));
+            //builder.Entity<Customer>()
+            //    .HasMany(c => c.ShoppingCart)
+            //    .WithMany(p => p.Customers)
+            //    .UsingEntity(j => j.ToTable("CustomerProducts"));
 
             builder.Entity<ShoppingCartItem>()
             .HasKey(sci => new { sci.CustomerId, sci.ProductId });
