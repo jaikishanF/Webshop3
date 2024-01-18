@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Webshop3.Data;
+using X.PagedList;
 
 namespace Webshop3.Controllers
 {
@@ -13,9 +14,12 @@ namespace Webshop3.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var products = await _context.Product.ToListAsync();
+            int pageSize = 6; // 6 items per page
+            var pageNumber = page ?? 1;
+
+            var products = await _context.Product.ToPagedListAsync(pageNumber, pageSize);
             return View(products);
         }
 

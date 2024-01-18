@@ -14,6 +14,6 @@ namespace Webshop3.Models
         public required int Quantity { get; set; }
         public required string ImageUrl { get; set; }
         public List<Customer>? Customers { get; set; }
-        public List<ShoppingCartItem> ShoppingCartItems { get; set; }
+        public List<ShoppingCartItem>? ShoppingCartItems { get; set; }
     }
 }
