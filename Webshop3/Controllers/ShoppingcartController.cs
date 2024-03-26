@@ -6,6 +6,7 @@ using Webshop3.Models;
 
 namespace Webshop3.Controllers
 {
+    // Handle shopping cart logic for the user
     public class ShoppingcartController : Controller
     {
         private readonly Webshop3Context _context;
@@ -17,21 +18,10 @@ namespace Webshop3.Controllers
             _userManager = userManager;
         }
 
-
-        //public IActionResult Index()
-        //{
-        //    var customer = _context.Customer.Single(c => c.Email == _userManager.GetUserName(User));
-        //    _context.Entry(customer)
-        //        .Collection(c => c.ShoppingCart)
-        //        .Load();
-        //    ViewData["ShoppingCartItems"] = customer.ShoppingCart;
-
-        //    return View();
-        //}
-
-        // view the shopping cart from the logged in customer
+        // View shopping cart for the user logged in
         public async Task<IActionResult> Index()
         {
+            // Get logged in customer by user email
             var userEmail = _userManager.GetUserName(User);
             var customer = await _context.Customer.SingleAsync(c => c.Email == userEmail);
 
@@ -41,33 +31,37 @@ namespace Webshop3.Controllers
                                                   .Include(sci => sci.Product) // Include Product details
                                                   .ToListAsync();
 
-            // You can still use ViewData to pass the cart items to the view
+            // Pass the cart items to the view
             ViewData["ShoppingCartItems"] = shoppingCartItems;
 
             return View();
         }
 
 
-        // add the product to the logged in customer shopping cart
+        // Add the product to the logged in customer shopping cart
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId)
         {
             try
             {
+                // Get logged in customer by user email
                 var userEmail = _userManager.GetUserName(User);
                 var customer = await _context.Customer.FirstOrDefaultAsync(c => c.Email == userEmail);
 
+                // Check if customer is not logged in
                 if (customer == null)
                 {
                     return Json(new { success = false, message = "Customer not found." });
                 }
 
+                // Get shopping cart data for this user and check if the added product already exists in the cart
                 var existingItem = await _context.ShoppingCartItems
                                                  .FirstOrDefaultAsync(sci => sci.CustomerId == customer.Id && sci.ProductId == productId);
 
+                // If product is already in cart
                 if (existingItem != null)
                 {
-                    // Increment quantity if item already exists in cart
+                    // Increment quantity 
                     existingItem.Quantity++;
                 }
                 else
@@ -79,10 +73,12 @@ namespace Webshop3.Controllers
                         ProductId = productId,
                         Quantity = 1
                     };
+
                     _context.ShoppingCartItems.Add(newItem);
                 }
 
                 await _context.SaveChangesAsync();
+                // Display message for user
                 return Json(new { success = true, message = "Product added to cart" });
             }
             catch (Exception ex)
@@ -92,9 +88,11 @@ namespace Webshop3.Controllers
             }
         }
 
+        // Delete the product from the shopping cart
         [HttpPost]
         public async Task<IActionResult> Delete(int productId)
         {
+            // Get logged in customer by user email
             var userEmail = _userManager.GetUserName(User);
             var customer = await _context.Customer.FirstOrDefaultAsync(c => c.Email == userEmail);
 
@@ -107,6 +105,7 @@ namespace Webshop3.Controllers
             var cartItem = await _context.ShoppingCartItems
                                          .FirstOrDefaultAsync(sci => sci.CustomerId == customer.Id && sci.ProductId == productId);
 
+            // if ShoppingCartItem exists, delete it from cart
             if (cartItem != null)
             {
                 _context.ShoppingCartItems.Remove(cartItem);
